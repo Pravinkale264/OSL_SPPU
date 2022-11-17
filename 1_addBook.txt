@@ -1,0 +1,165 @@
+#!/bin/sh
+
+create() 
+{
+	echo "Enter the name of address book"
+	read ab
+	
+	#chk addr book is available in curr working dir 
+	res=`ls | grep $ab | wc -w`
+	
+	if [ $res -gt 0 ] 
+	then 
+		echo "Error: file already exists"
+		
+	else 
+		touch $ab
+		echo "File created"
+	fi
+	
+	
+}
+
+display()
+{
+	echo "Enter the name of address book "
+	read ab
+	
+	res=`ls | grep $ab | wc -w`
+	
+	if [ $res -gt 0 ]
+	then
+		cat $ab
+		
+	else 
+		echo "Error: file not found"
+	fi
+}
+
+insert()
+{
+	echo "Enter the name of address book"
+	read ab
+	
+	res=`ls | grep $ab | wc -w`
+	
+	if [ $res -gt 0 ] 
+	then 
+		echo "Enter your email address"
+		read email
+		
+		#checking if email is present in table or not
+		
+		res1=`cat $ab | grep $email | wc -w`
+		
+		if [ $res1 -gt 0 ] 
+		then
+			echo "Error: email already exists"
+			
+		else
+			echo "Enter First name, Last name, Mobile Number"
+			read fname lname mob
+			
+			record=`echo $fname $lname $email $mob`
+			echo $record >> $ab
+			echo "Record inserted"
+		fi
+		
+	else 
+		echo "Error: file not found"
+	fi
+}
+
+modify()
+{
+	echo "Enter the name of address book"
+	read ab
+	
+	res=`ls | grep $ab | wc -w`
+	
+	if [ $res -gt 0 ] 
+	then
+		echo "Enter your email address" 
+		read email
+		
+		res1=`cat $ab | grep $email | wc -w`
+		
+		if [ $res1 -gt 0 ]
+		then 
+			echo "Enter the new First name, Last name, Mobile no."
+			read fname lname mob
+			
+			modified=`echo $fname $lname $email $mob`
+			old=`cat $ab | grep $email`
+			
+			sed -i s/"$old"/"$modified"/g $ab
+			
+			echo "Old data : $old"
+			echo "Modified data : $modified"
+			echo "Record modified"
+			
+		else 
+			echo "Error: email not found" 
+		fi
+		
+	else
+		echo "Error: file not found"
+	fi
+}
+
+delete()
+{
+	echo "Enter the name of address book"
+	read ab
+	
+	res=`ls | grep $ab | wc -w`
+	
+	if [ $res -gt 0 ] 
+	then 
+	
+		echo "Enter the email address"
+		read email
+		
+		res1=`cat $ab | grep $email | wc -w`
+		
+		if [ $res1 -gt 0 ]
+		then 
+			rec=`cat $ab | grep $email`
+			
+			sed -i s/"$rec"//g $ab
+			sed -i /^$/d $ab
+			echo "Record Deleted"
+		else 
+			echo "Error: email not found"
+		fi
+	
+	else 
+		echo "Error: file not found"
+	fi
+}
+
+
+
+while [ true ]
+do
+	echo "****************MENU****************"
+	echo "1. Create"
+	echo "2. Display" 
+	echo "3. Insert Record"
+	echo "4. Modify Record"
+	echo "5. Delete Record"
+	echo "7. Exit"
+	
+	echo "Enter the choice "
+	read choice
+	
+	case $choice in
+		1) create ;;
+		2) display ;;
+		3) insert ;;
+		4) modify ;;
+		5) delete ;;
+		7) exit ;;
+		*) echo "Wrong Choice!" ;;
+	esac
+done
